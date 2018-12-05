@@ -93,6 +93,13 @@ class BAGFileReader:
                 self.database.log_actie('overgeslagen', filenaam, 'mutatie datum-range voor BAG datum', True)
                 return
 
+            # stand datum BAG mutatie moet gelijk zijn aan de datum van de huidige db-staat
+            sql = "SELECT * FROM nlx_bag_info WHERE sleutel = 'extract_datum' AND waarde = '%s'" % mutatie_start_datum
+            if self.database.tx_uitvoeren(sql) != 1:
+                Log.log.info("mutatiebestand %s sluit niet aan op de huidige stand (extract_datum) van de database" % filenaam)
+                self.database.log_actie('overgeslagen', filenaam, 'mutatie datum-range voor BAG datum', True)
+                return
+
         # Verkrijg file-extensie (niet alle files, e.g. README bestand hebben die)
         ext = None
         filenaam_arr = filenaam.split('.')
