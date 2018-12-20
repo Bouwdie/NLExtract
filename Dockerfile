@@ -1,10 +1,14 @@
 FROM python:2
 
-RUN apt-get update && apt-get install -y python-gdal python-lxml
+RUN apt-get update && \
+    apt-get --yes install \
+        libgdal-dev \
 
+RUN pip install pygdal==2.1.2.3 lxml psycopg2-binary
+
+COPY ./docker-entrypoint.sh /
 WORKDIR /opt/NLExtract
 COPY . ./
 
-RUN pip install --no-cache-dir psycopg2-binary
-
-CMD [ "python", "./bag/src/bagextract.py" ]
+ENTRYPOINT [ "/docker-entrypoint.sh" ]
+CMD ["python"]
